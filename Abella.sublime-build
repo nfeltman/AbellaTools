@@ -1,6 +1,6 @@
 {
 	"selector": "source.abella",
-	"shell_cmd": "echo LOL NOPE",
+	"shell_cmd": "abella $file",
 	"file_regex": "(.+):([0-9]+)\\.([0-9]+)\\-[0-9]+\\.[0-9]+",
-	"syntax": "Packages/TwelfTools/Twelf.tmLanguage"
+	"syntax": "Packages/AbellaTools/Abella.tmLanguage"
 }
