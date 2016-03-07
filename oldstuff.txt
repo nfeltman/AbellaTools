@@ -1,0 +1,116 @@
+
+# capital identifier: '[A-Z_][!#$&''*-\-/-9;-Z\\\^-z|~]*'
+# non-capital identifier: '[!#$&''*-\-/-9;-@\\\^`-z|~][!#$&''*-\-/-9;-Z\\\^-z|~]*'
+---
+name: Abella
+scopeName: source.abella
+fileTypes: [sig, mod, thm]
+uuid: 6b5536a4-8b6d-4f22-9470-66f5f4d8a052
+
+repository:
+  comments:
+    patterns:
+    - comment: Line Comment
+      name: comment.line.abella
+      begin: \%
+      end: \n
+
+    - comment: Block Comment
+      name: comment.block.abella
+      begin: '\%\{'
+      end: '\}\%'
+
+  rhs:
+    patterns: 
+    - include: '#comments'
+
+    - comment: Just Keywords
+      name: constant.language.abella
+      match: '\b(type|false|o|olist|nil|::|prop|pi|forall|exists|nabla)\b'
+
+    - comment: Built in Connectives
+      name: keyword.operator.abella
+      match: '->|\\/|/\\|=>|:=|=|\|-'
+
+    - comment: Top-Level Connectives
+      name: keyword.other.abella
+      match: ':-|,|;|by'
+
+    - comment: Grouping Operators
+      name: keyword.character.escape
+      match: '\{|\}|\(|\)|\\'
+
+    - comment: Meta Variables
+      name: variable.language.abella
+      match: '[A-Z_][a-zA-Z_0-9]*'
+
+    - comment: Standard Variables
+      name: variable.parameter.abella
+      match: '[a-z][a-zA-Z_0-9]*'
+
+
+patterns:
+- include: '#comments'
+
+- comment: Empty Line
+  name: meta.emptyline
+  match: '\s*'
+
+- comment: Sig/Module Header
+  name: meta.section
+  match: '(sig|module)\s+([a-zA-Z_]+)\s*.'
+  captures: 
+    '1': {name: keyword.control.abella}
+    '2': {name: entity.name.section}
+
+- comment: Type/Kind Declaration
+  name: meta.function.abella
+  begin: '\s*(type|kind)\s+(([a-z][a-zA-Z_]*)\s*,\s*)*([a-z][a-zA-Z_]*)\b'
+  end: '\.'
+  beginCaptures:
+    '1': {name: keyword.control.abella}
+    '4': {name: entity.name.function}
+  patterns:
+  - include: '#rhs'
+
+- comment: Specification/Import Commands
+  name: meta.section
+  match: '(Specification|Import)\s+("[a-zA-Z_]+")\s*.'
+  captures: 
+    '1': {name: keyword.control.abella}
+    '2': {name: entity.name.section}
+
+- comment: Theorem Declaration
+  name: meta.function.abella
+  begin: '\s*(Theorem)\s+([a-z][a-zA-Z_]*)\s*:'
+  end: '\.'
+  beginCaptures:
+    '1': {name: keyword.control.abella}
+    '2': {name: entity.name.function}
+  patterns:
+  - include: '#rhs'
+
+- comment: Define/CoDefine
+  name: meta.function.abella
+  begin: '\s*(Define|CoDefine)'
+  end: '\.'
+  beginCaptures:
+    '1': {name: keyword.control.abella}
+  patterns:
+  - include: '#rhs'
+
+- comment: Tactic
+  name: meta.tactic.abella
+  begin: '\b(induction|coinduction|intros|case|search|apply|backchain|unfold|assert|exists|split|left|right|permute|inst|cut|monotone|undo|skip|abort|clear|abbrev|unabbrev)\b'
+  end: '\.'
+  beginCaptures:
+    '1': {name: constant.numeric.abella}
+
+- comment: Rule Declaration
+  name: meta.rule.abella
+  begin: '^'
+  end: '\.'
+  patterns:
+  - include: '#rhs'
+
+...

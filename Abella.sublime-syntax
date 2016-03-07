@@ -1,0 +1,120 @@
+%YAML 1.2
+---
+name: Abella
+file_extensions: [sig,mod,thm]
+scope: source.abella
+
+variables:
+  fileIdent: '[a-zA-Z0-9_\-]+'
+  lowerident: '[a-z][a-zA-Z0-9_\-'']+'
+  capident: '[A-Z][a-zA-Z0-9_\-'']*'
+
+contexts:
+  main:
+    - match: (sig)\s+({{fileIdent}})\s*\.
+      scope: meta.section
+      captures: 
+        1: keyword.control.abella
+        2: entity.name.section
+      push: sigbody
+
+    - match: (module)\s+({{fileIdent}})\s*\.
+      scope: meta.section
+      captures: 
+        1: keyword.control.abella
+        2: entity.name.section
+      push: modbody
+
+  prototype:
+    - include: comments
+
+## COMMENTS
+  comments: 
+    - match: '%.*'
+      scope: comment.line.abella
+
+## SIGNATURES
+  sigbody:
+    - meta_content_scope: meta.sigbody.abella
+    - match: (kind|type)
+      scope: keyword.control.abella
+      push: decName
+
+  decName: 
+    - match: '({{lowerident}})\s*,'
+      captures: 
+        1: entity.name.function
+
+    - match: '({{lowerident}})\s*'
+      captures: 
+        1: entity.name.function
+      set: definition
+
+  definition:
+    - meta_content_scope: meta.definitionbody.abella
+    - match: (\.)
+      captures:
+        1: keyword.control.abella
+      pop: true
+    - include: tycon
+
+  tycon:
+    - match: \(
+      scope: keyword.character.escape
+      push: tycon_parens
+
+    - match: \)
+      scope: invalid.illegal.stray-parens-end
+
+    - match: \b(type|o)\b
+      scope: constant.language.abella
+
+    - match: '->'
+      scope: keyword.operator.abella
+
+    - match: '->|\\/|/\\|=>|:=|=|\|-'
+      scope: keyword.operator.abella
+
+    - match: '{{lowerident}}'
+      scope: variable.parameter.abella
+
+    - match: '{{capident}}'
+      scope: invalid.illegal.metavariable
+
+  tycon_parens:
+    - match: \)
+      scope: keyword.character.escape
+      pop: true
+    - include: tycon
+
+## MODULE FILES
+
+  modbody:
+    - meta_content_scope: meta.modbody.abella
+    - include: judgement
+  
+  judgement:
+    - match: \(
+      scope: keyword.character.escape
+      push: judgement_parens
+
+    - match: \)
+      scope: invalid.illegal.stray-parens-end
+
+    - match: (\bpi\b|=>|\\)
+      scope: constant.language.abella
+
+    - match: '(:-|,|\.)'
+      scope: keyword.control.abella
+
+    - match: '{{lowerident}}'
+      scope: variable.parameter.abella
+
+    - match: '{{capident}}'
+      scope: variable.language.metavariable
+
+  judgement_parens:
+    - match: \)
+      scope: keyword.character.escape
+      pop: true
+    - include: judgement
